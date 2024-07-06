@@ -1,0 +1,306 @@
+-- Creating Customers table
+CREATE TABLE WineClubMemberships (
+    WineClubMembershipID INT PRIMARY KEY,
+    CustomerID INT,
+    JoinDate DATE,
+    EndDate DATE,
+    
+);
+CREATE TABLE MarketingCampaigns (
+    MarketingCampaignID INT PRIMARY KEY,
+    CampaignName VARCHAR(50),
+    CampaignType VARCHAR(50)
+);
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    CustomerType VARCHAR(50),
+    Address VARCHAR(255),
+    City VARCHAR(15),
+    Zip VARCHAR(10),
+    Email VARCHAR(25),
+    Phone VARCHAR(20),
+    MarketingCampaignID INT,
+    WineClubMembershipID INT,
+    FOREIGN KEY (MarketingCampaignID) REFERENCES MarketingCampaigns(MarketingCampaignID),
+    FOREIGN KEY (WineClubMembershipID) REFERENCES WineClubMemberships(WineClubMembershipID),
+    UNIQUE (WineClubMembershipID)
+);
+
+-- Creating Marketing Campaigns table
+
+
+-- Creating Products table
+CREATE TABLE Products (
+    ProductID INT PRIMARY KEY,
+    ProductType VARCHAR(50),
+    SKU VARCHAR(50),
+    ProductName VARCHAR(50),
+    Category VARCHAR(255),
+    Subcategory VARCHAR(255),
+    UnitCost DECIMAL(10,2)
+);
+
+-- Creating Orders table
+CREATE TABLE Orders (
+    OrdersID INT PRIMARY KEY,
+    OrderDate DATE,
+    CustomerID INT,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+-- Creating Payments table
+CREATE TABLE Payments (
+    PaymentID INT PRIMARY KEY,
+    CustomerID INT,
+    PaymentDate DATE,
+    Amount DECIMAL(10,2),
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+-- Creating Wine Club Memberships table
+
+
+CREATE TABLE Vineyards (
+    VineyardID INT PRIMARY KEY,
+    VineyardName VARCHAR(255),
+    Location VARCHAR(255),
+    SizeInAcres FLOAT,
+    OwnedBy VARCHAR(255)
+);
+-- Creating Employees table
+CREATE TABLE Employees (
+    EmployeeID INT PRIMARY KEY,
+    EmployeeName VARCHAR(255),
+    Position VARCHAR(255),
+    CertificationLevel VARCHAR(255),
+    CertificationDate DATE,
+    RecertificationOutcome VARCHAR(255),
+    TIPSCertified VARCHAR(5),
+    SSN VARCHAR(11),
+    InitialPayRate DECIMAL(10,2),
+    EmergencyContact VARCHAR(255),
+    CurrentPayRate DECIMAL(10,2),
+    VineyardID INT,
+    FOREIGN KEY (VineyardID) REFERENCES Vineyards(VineyardID)
+);
+
+-- Creating Vendor table
+CREATE TABLE Vendors (
+    VendorID INT PRIMARY KEY,
+    Name VARCHAR(255),
+    Address VARCHAR(255),
+    Phone VARCHAR(255),
+    PrimaryContact VARCHAR(255)
+    
+);
+
+
+-- Creating Bottles table
+CREATE TABLE Bottles (
+    BottleID INT PRIMARY KEY,
+    Capacity DECIMAL(5,2),
+    Shape VARCHAR(255),
+    GlassColor VARCHAR(255),
+    PricePerUnit DECIMAL(10,2),
+	VendorID INT,
+    FOREIGN KEY (VendorID) REFERENCES Vendors(VendorID)
+);
+
+
+
+-- Creating Purchase Order table
+CREATE TABLE PurchaseOrder (
+    OrderID INT PRIMARY KEY,
+    OrderDate DATE,
+    OrderReceivedDate DATE,
+    ChargedPrice DECIMAL(10,2),
+    VendorID INT,
+    FOREIGN KEY (VendorID) REFERENCES Vendors(VendorID)
+);
+
+-- Altering Payments to include Purchase Order ID
+ALTER TABLE Payments ADD PurchaseOrderID INT;
+ALTER TABLE Payments ADD CONSTRAINT FK_Payments_PurchaseOrder FOREIGN KEY (PurchaseOrderID) REFERENCES PurchaseOrder(OrderID);
+
+-- Full-Time, Part-Time, Intern Employees tables
+CREATE TABLE FullTimeEmployees (
+    EmployeeID INT PRIMARY KEY,
+    AnnualSalary DECIMAL(10, 2),
+    FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID)
+);
+
+CREATE TABLE PartTimeEmployees (
+    EmployeeID INT PRIMARY KEY,
+    HourlyRate DECIMAL(10, 2),
+    FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID)
+);
+
+CREATE TABLE Interns (
+    EmployeeID INT PRIMARY KEY,
+    SchoolName VARCHAR(255),
+    FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID)
+);
+
+-- Wine Club Membership Offerings
+CREATE TABLE WineClubOfferings (
+    OfferingID INT PRIMARY KEY,
+    MembershipID INT,
+    ProductID INT,
+    FOREIGN KEY (MembershipID) REFERENCES WineClubMemberships(WineClubMembershipID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+-- Product subtypes (Cheese, Grain, Meat)
+CREATE TABLE Cheese (
+    CheeseID INT PRIMARY KEY,
+    ProductID INT,
+    CheeseType VARCHAR(50),
+    CheeseColor VARCHAR(50),
+    CheeseAge INT,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+CREATE TABLE Grain (
+    GrainID INT PRIMARY KEY,
+    ProductID INT,
+    GrainType VARCHAR(50),
+    GrainColor VARCHAR(50),
+    HarvestedDate DATE,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+CREATE TABLE Meat (
+    MeatID INT PRIMARY KEY,
+    ProductID INT,
+    MeatType VARCHAR(50),
+    UseBy DATE,
+    StorageCondition VARCHAR(50),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+-- Creating OrderTracking table
+CREATE TABLE OrderTracking (
+    OrderTrackingID INT PRIMARY KEY,
+    OrderID INT,
+    OrderedQuantity INT,
+    ShipmentStatus VARCHAR(50),
+    ReceivedQuantity INT,
+    ShippingInfo VARCHAR(255),
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrdersID)
+);
+
+-- Creating Individual table
+CREATE TABLE Individual (
+    IndividualID INT PRIMARY KEY,
+    CustomerID INT,
+    FirstName VARCHAR(255),
+    LastName VARCHAR(255),
+    DateOfBirth DATE,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+-- Creating Wholesale table
+CREATE TABLE Wholesale (
+    WholesaleID INT PRIMARY KEY,
+    CustomerID INT,
+    CompanyName VARCHAR(255),
+    TaxID VARCHAR(50),
+    ResaleLicense VARCHAR(50),
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+-- Creating CottageReservation table
+CREATE TABLE CottageReservation (
+    ReservationID INT PRIMARY KEY,
+    CustomerID INT,
+    StartDate DATE,
+    EndDate DATE,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+-- Creating RoomReservation table
+CREATE TABLE RoomReservation (
+    RoomReservationID INT PRIMARY KEY,
+    ReservationID INT,
+    RoomNumber INT,
+    FOREIGN KEY (ReservationID) REFERENCES CottageReservation(ReservationID)
+);
+
+-- Creating MeetingRoom table
+CREATE TABLE MeetingRoom (
+    MeetingRoomID INT PRIMARY KEY,
+    ReservationID INT,
+    RoomNumber INT,
+    Capacity INT,
+    FOREIGN KEY (ReservationID) REFERENCES CottageReservation(ReservationID)
+);
+
+-- Creating Event table
+CREATE TABLE Event (
+    EventID INT PRIMARY KEY,
+    ReservationID INT,
+    EventName VARCHAR(255),
+    EventType VARCHAR(255),
+    FOREIGN KEY (ReservationID) REFERENCES CottageReservation(ReservationID)
+);
+
+-- Creating Food table
+CREATE TABLE Food (
+    FoodID INT PRIMARY KEY,
+    ProductID INT,
+    Quantity INT,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+-- Creating GrapeVariety table
+CREATE TABLE GrapeVariety (
+    GrapeVarietyID INT PRIMARY KEY,
+    VarietyName VARCHAR(255),
+    JuiceConversionRatio DECIMAL(5,2),
+    WineStorageRequirement VARCHAR(255),
+    WineAgingRequirement VARCHAR(255),
+    VineyardID INT,
+    FOREIGN KEY (VineyardID) REFERENCES Vineyards(VineyardID)
+    );
+
+-- Creating Wines table
+CREATE TABLE Wines (
+    WineID INT PRIMARY KEY,
+    ProductID INT,
+    WineName VARCHAR(255),
+    VintageYear VARCHAR(10),
+    WineTypeID INT,
+    AlcoholPercentage DECIMAL(5,2),
+    GrapeVarietyID INT,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
+    FOREIGN KEY (GrapeVarietyID) REFERENCES GrapeVariety(GrapeVarietyID)
+    -- Assuming a many-to-many relationship with Employees would be managed in the application logic
+);
+
+
+
+
+
+ALTER TABLE Food
+ADD CONSTRAINT FK_Food_Products 
+FOREIGN KEY (ProductID) REFERENCES Products(ProductID);
+
+-- Alter Wines table to include ProductID as a foreign key to Products
+ALTER TABLE Wines
+ADD CONSTRAINT FK_Wines_Products 
+FOREIGN KEY (ProductID) REFERENCES Products(ProductID);
+
+-- Alter Cheese table to have its primary key also be a foreign key to Food
+ALTER TABLE Cheese
+ADD CONSTRAINT FK_Cheese_Food 
+FOREIGN KEY (CheeseID) REFERENCES Food(FoodID);
+
+-- Alter Grain table to have its primary key also be a foreign key to Food
+ALTER TABLE Grain
+ADD CONSTRAINT FK_Grain_Food 
+FOREIGN KEY (GrainID) REFERENCES Food(FoodID);
+
+-- Alter Meat table to have its primary key also be a foreign key to Food
+ALTER TABLE Meat
+ADD CONSTRAINT FK_Meat_Food 
+FOREIGN KEY (MeatID) REFERENCES Food(FoodID);
